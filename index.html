@@ -21,15 +21,15 @@
     <img src="pequeno.png" id="img-pequeno" />
 
     <div style="margin-top: 1rem">
-        <button id="share-button">Compartilhar Business Card</button>
+        <button id="share-button-image">Compartilhar Business Card (Imagem)</button>
     </div>
+    <div style="margin-top: 1rem">
+        <button id="share-button-pdf">Compartilhar Business Card (PDF)</button>
+    </div>
+
     <script type="text/javascript">
-        const shareData = {
-            title: 'MDN',
-            text: 'Learn web development on MDN!',
-            url: 'https://developer.mozilla.org'
-        }
-        const button = document.querySelector('#share-button')
+        const buttonImage = document.querySelector('#share-button-image')
+        const buttonPdf = document.querySelector('#share-button-pdf')
 
         async function loadFiles(filesPath = []) {
             const files = []
@@ -46,22 +46,48 @@
             return files
         }
 
-        const filesArray = [];
+        const filesImageArray = [];
+        const filesPdfArray = [];
+
         loadFiles(['grande.png'])
             .then((files) => {
-                files.map((f) => filesArray.push(f))
+                files.map((f) => filesImageArray.push(f))
             }, (error) => {
                 console.error(error)
             })
 
-        button.addEventListener('click', async function (event) {
-            console.log(filesArray)
+        loadFiles(['Business Card.pdf'])
+            .then((files) => {
+                files.map((f) => filesPdfArray.push(f))
+            }, (error) => {
+                console.error(error)
+            })
+
+        buttonImage.addEventListener('click', async function (event) {
             try {
-                if (navigator.canShare && navigator.canShare({ files: filesArray })) {
+                if (navigator.canShare && navigator.canShare({ files: filesImageArray })) {
                     navigator.share({
-                        files: filesArray,
-                        title: 'Pictures',
-                        text: 'Our Pictures.',
+                        files: filesImageArray,
+                        title: 'Cartão de Trabalho',
+                        text: 'https://preview.oddie.com.br/u/2',
+                    })
+                        .then(() => console.log('Share was successful.'))
+                        .catch((error) => console.log('Sharing failed', error));
+                } else {
+                    console.log(`Your system doesn't support sharing files.`);
+                }
+            } catch (err) {
+                console.error(err)
+            }
+        })
+
+        buttonPdf.addEventListener('click', async function (event) {
+            try {
+                if (navigator.canShare && navigator.canShare({ files: filesPdfArray })) {
+                    navigator.share({
+                        files: filesPdfArray,
+                        title: 'Cartão de Trabalho',
+                        text: 'https://preview.oddie.com.br/u/2',
                     })
                         .then(() => console.log('Share was successful.'))
                         .catch((error) => console.log('Sharing failed', error));
