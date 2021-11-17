@@ -1,20 +1,78 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Testando o Business Card</title>
-    
-    <meta property="og:title" content="Geralda Cardoso, Babá, Passeador de Cães e Personal Trainer | Oddie"/>
-    <meta property="og:description" content="Sou uma excelente Babá. Atualmente possuo mais de 10 anos de experiência e boas referências, o que comprova a qualidade do meu atendimento. Sou muito atenciosa e dou garantia pelos meus serviços prestados. Eu atendo em todas as partes de Brasília."/>
-    <meta property="og:image" content="https://lucascampelo.github.io/opengraph-test/grande.png"/>
+
+    <meta property="og:title" content="Geralda Cardoso, Babá, Passeador de Cães e Personal Trainer | Oddie" />
+    <meta property="og:description"
+        content="Sou uma excelente Babá. Atualmente possuo mais de 10 anos de experiência e boas referências, o que comprova a qualidade do meu atendimento. Sou muito atenciosa e dou garantia pelos meus serviços prestados. Eu atendo em todas as partes de Brasília." />
+    <meta property="og:image" content="https://lucascampelo.github.io/opengraph-test/grande.png" />
 </head>
+
 <body>
     <h1>Imagem grande</h1>
 
-    <img src="grande.png" />
+    <img src="grande.png" id="img-grande" />
     <br /><br /><br />
-    <img src="pequeno.png" />
+    <img src="pequeno.png" id="img-pequeno" />
+
+    <div style="margin-top: 1rem">
+        <button id="share-button">Compartilhar Business Card</button>
+    </div>
+    <script type="text/javascript">
+        const shareData = {
+            title: 'MDN',
+            text: 'Learn web development on MDN!',
+            url: 'https://developer.mozilla.org'
+        }
+        const button = document.querySelector('#share-button')
+
+        async function loadFiles(filesPath = []) {
+            const files = []
+            for (const path of filesPath) {
+                const urlParts = path.split('/')
+                const filename = urlParts[urlParts.length - 1]
+                const response = await fetch(path);
+                const data = await response.blob();
+
+                const file = new File([data], filename, { type: data.type })
+                files.push(file)
+            }
+
+            return files
+        }
+
+        const filesArray = [];
+        loadFiles(['grande.png'])
+            .then((files) => {
+                files.map((f) => filesArray.push(f))
+            }, (error) => {
+                console.error(error)
+            })
+
+        button.addEventListener('click', async function (event) {
+            console.log(filesArray)
+            try {
+                if (navigator.canShare && navigator.canShare({ files: filesArray })) {
+                    navigator.share({
+                        files: filesArray,
+                        title: 'Pictures',
+                        text: 'Our Pictures.',
+                    })
+                        .then(() => console.log('Share was successful.'))
+                        .catch((error) => console.log('Sharing failed', error));
+                } else {
+                    console.log(`Your system doesn't support sharing files.`);
+                }
+            } catch (err) {
+                console.error(err)
+            }
+        })
+    </script>
 </body>
+
 </html>
